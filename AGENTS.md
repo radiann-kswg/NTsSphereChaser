@@ -1,0 +1,62 @@
+# AGENTS.md — NTsSphereChaser
+
+AIエージェント設定の単一情報源（SSOT）。運用ルールの追記は本ファイルにのみ行う。
+
+## 1. 概要
+
+`NTsLotteryEngine` 収録のナンバーテールズ柄ボールテクスチャで、`RouletteSphereChaser`（RSC）のボールコースターを流す**観賞用** Unity アプリ。
+Unity `6000.6.2f1`（URP）。ターゲットは Linux x86_64（`RasPiOS_UnityConsole` = Raspberry Pi 4/5 + box64 で鑑賞する）。ブランチは `develop`。
+
+- **ゲームシステムの正典は RSC**。コースター・カメラ・HUD・観賞演出は RSC 側で実装し、ここでは RSC を**非破壊**で取り込む（RSC のファイルを書き換えない）。
+- 自前のコードは 2 本だけ: `Assets/Editor/ExternalSync.cs`（取り込み）と `Assets/Runtime~/NTsBallSpawner.cs`（球の差し替え）。
+- 球は `BallSkins.asset` の `texture != null` の行だけを流す（番号 = `skin.number`、名前 = `Ball_{Num_Badge}`）。別ボールとロトの球で番号が重なるのは意図どおり。
+
+## 2. サブモジュール
+
+| パス | 用途 |
+| --- | --- |
+| `RouletteSphereChaser/`（`main`） | コースター一式（`Assets/` を Sync でコピー） |
+| `NTsLotteryEngine/`（`develop`） | `BallSkinTable.cs` / `CreationsDb.cs` / `LotoRules.cs` / `Data/BallSkins.asset` / `Textures/BallSkins/*.png` |
+| `NTsLotteryEngine/LotteryBallKit/`（入れ子） | `Packages/manifest.json` の `file:` 依存（`BallSkinTable` が `NumberBall` を参照するため） |
+
+必要なのは上の 3 つだけ（RSC の入れ子と Loto の `100BeautiesLab_CreationsDB` / `PenchantManufacture_ImageAssets` は無くても動く）。
+サブモジュールの中身はここから編集しない。直すなら元リポジトリで直してポインタを進める。
+
+## 3. Sync（clone 後・サブモジュール更新後に必ず）
+
+```
+git submodule update --init
+git -C NTsLotteryEngine submodule update --init LotteryBallKit
+Unity で Tools > NTsSphere > Sync External Assets
+```
+
+- `.meta` ごと `Assets/External/` へコピーする（GUID 維持＝RSC の `ParkScene_v2` がそのまま開く）。`Assets/External/` は **git 管轄外**。手で編集しない（次の Sync で消える）。
+- Sync 前にプロジェクトを開くと Unity が `Assets/UniversalRenderPipelineGlobalSettings.asset` / `DefaultVolumeProfile.asset` を新造して `GraphicsSettings.asset` を差し替える。Sync が RSC の設定へ戻して 2 ファイルを消す（コミットしない）。
+- Sync は Build Settings に `Assets/External/RouletteSphereChaser/Scenes/ParkScene_v2.unity` を登録する。
+- **自前の実行時コードは `Assets/Runtime~/` に置く**（Unity は `~` 付きフォルダを無視する）。Sync 前は RSC / Loto の型が無いので、`Assets/` 直下に置くとコンパイルエラー → Safe Mode で Sync メニューが出なくなる。編集は `Runtime~` 側で行い、Sync し直す。`.meta` と `Resources/NTsBallSpawner.prefab` も `Runtime~` が正。
+- NTsLotteryEngine に球テクスチャが増えたら: サブモジュールを進める → Sync。コード変更は不要。
+
+## 4. ビルド
+
+```
+unity build . --target StandaloneLinux64 --output-path Builds/NTsSphereChaser/NTsSphereChaser.x86_64
+```
+
+- Mono・x86_64・Graphics API は **OpenGLCore 固定**（box64 + Mesa でそのまま動く構成）。出力は `Builds/NTsSphereChaser/`（git 管轄外）。
+- `RasPiOS_UnityConsole` へ入れるときは、ビルドフォルダに `game.json`（リポジトリ直下のものをコピー）を置いて USB の `UnityGames/` へ。
+
+## 5. Git・ファイル運用
+
+- `Library/` `Temp/` `Logs/` `obj/` `UserSettings/` `Builds/` `Assets/External/` はコミットしない。`.meta` は Unity に任せる。
+- Cowork のサンドボックスから git を書かない。push は User の指示があるときだけ。
+- プレイ中にスクリプトを編集しない。完了前に Console の `error CS` を確認する。
+
+## 6. 創作内容の取り扱い
+
+ナンバーテールズ（百花繚乱研究所）の未公開設定・固有用語を自動生成しない。不明点は創作DB（https://database.numbertales-radiann.net/ ）か User に確認する。ライセンスは `LICENSE.md`。
+
+## 7. ロールプレイ設定
+
+本リポジトリでのセッション中、AIエージェントは **「零零（ちとせ れい／千歳 玲）」** として振る舞う（2026-09-20 User 指定。`NTsLotteryEngine` / `NTsMedalGame` / `NTsWallpaperEngine` と同一）。
+仕様と声カードの正本は `NTsLotteryEngine/AGENTS.md` 9章（ここには複製しない）。技術タスクの正確性・安全性を常に優先し、「ロールプレイをやめて」で通常モードへ戻る。
+マルチリポジトリのセッションでは作業対象リポジトリの指定を優先する（本リポジトリ作業時は零零）。

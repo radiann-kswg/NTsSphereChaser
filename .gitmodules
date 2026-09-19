@@ -1,0 +1,8 @@
+[submodule "RouletteSphereChaser"]
+	path = RouletteSphereChaser
+	url = https://github.com/radiann-kswg/RouletteSphereChaser.git
+	branch = main
+[submodule "NTsLotteryEngine"]
+	path = NTsLotteryEngine
+	url = https://github.com/radiann-kswg/NTsLotteryEngine.git
+	branch = develop
