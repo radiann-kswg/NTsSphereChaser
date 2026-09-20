@@ -7,7 +7,7 @@ using UnityEngine;
 public class NTsBallSpawner : MonoBehaviour
 {
     public BallSkinTable table;   // Resources/NTsBallSpawner.prefab で BallSkins.asset を参照（ビルドに含めるため）
-    public string[] names;        // table.skins と同じ並びの HUD 用英名。Sync 後に Editor/BallNameBaker が焼く（Runtime~ 側の prefab は空のまま）
+    public string[] names;        // table.skins と同じ並びの 創作DB の Name_EN。Sync 後に Editor/BallNameBaker が焼く（Runtime~ 側の prefab は空のまま）
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     static void Boot()
@@ -33,7 +33,7 @@ public class NTsBallSpawner : MonoBehaviour
             go.name = "Ball_" + skin.texture.name.Replace("BallTex_NTS-", "");
             var ball = go.GetComponent<LotteryBall>();
             ball.number = skin.number;
-            ball.displayName = names != null && k < names.Length ? names[k] : "";   // RSC の BallHUD が "Ball 02  Binor" と出す
+            ball.displayName = names != null && k < names.Length ? names[k] : "";   // 創作DB の Name_EN。RSC の BallHUD が "Ball 93(Nintris)" / "Ball Binor" と出す
             ball.Apply();
             ball.SetCharacterTexture(skin.texture);
             yield return new WaitForSeconds(rsc.interval);

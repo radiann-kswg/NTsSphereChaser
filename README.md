@@ -20,7 +20,7 @@ git -C NTsLotteryEngine/100BeautiesLab_CreationsDB sparse-checkout set --no-cone
 Unity `6000.6.2f1` で開き、`Tools > NTsSphere > Sync External Assets` を 1 回実行する（サブモジュールの資産を `Assets/External/` へコピー。git 管轄外）。
 `Assets/External/RouletteSphereChaser/Scenes/ParkScene_v2.unity` を開いて Play。
 
-追従中の球は HUD に `Ball 02  Binor` のように番号と名前（創作DB の英名）で出る。名前は Sync のときにエディタで焼き込むので、ビルドしたアプリは創作DB を持ち歩かない。
+追従中の球は HUD に `Ball 93(Nintris)` / `Ball Binor` のように創作DB の `Name_EN` で出る。名前は Sync のときにエディタで焼き込むので、ビルドしたアプリは創作DB を持ち歩かない。
 操作（キーボード／ゲームパッド）と音は RouletteSphereChaser と同じ（[README](https://github.com/radiann-kswg/RouletteSphereChaser#readme) の操作表）。
 
 ## ビルド

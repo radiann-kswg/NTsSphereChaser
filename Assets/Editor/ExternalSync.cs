@@ -45,8 +45,9 @@ public static class ExternalSync
         AssetDatabase.DeleteAsset("Assets/DefaultVolumeProfile.asset");
         EditorBuildSettings.scenes = new[] { new EditorBuildSettingsScene(Scene, true) };
         // 球の名前を焼き直す（prefab をコピーし直したので names が空に戻っている）。型は Sync 後にしか存在しないので名前で引く。
-        // 初回 Sync ではまだ無い → コンパイル後のドメインリロードで BallNameBaker が自走する
-        System.Type.GetType("BallNameBaker, Assembly-CSharp-Editor")?
+        // 初回 Sync ではまだ無い → コンパイル後のドメインリロードで BallNameBaker が自走する。
+        // スクリプトが変わって再コンパイルが始まっているときも呼ばない（古い BallNameBaker で焼くと、リロード後の新しい方が「焼き済み」と見て直さない）
+        if (!EditorApplication.isCompiling) System.Type.GetType("BallNameBaker, Assembly-CSharp-Editor")?
             .GetMethod("Bake", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)?.Invoke(null, null);
         Debug.Log($"[ExternalSync] {n} files → Assets/External（Build Settings: {Scene}）");
     }

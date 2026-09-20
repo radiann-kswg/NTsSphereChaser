@@ -9,7 +9,7 @@ Unity `6000.6.2f1`（URP）。ターゲットは Linux x86_64（`RasPiOS_UnityCo
 
 - **ゲームシステムの正典は RSC**。コースター・カメラ・HUD・観賞演出は RSC 側で実装し、ここでは RSC を**非破壊**で取り込む（RSC のファイルを書き換えない）。
 - 自前のコードは 3 本だけ: `Assets/Editor/ExternalSync.cs`（取り込み）・`Assets/Runtime~/NTsBallSpawner.cs`（球の差し替え）・`Assets/Runtime~/Editor/BallNameBaker.cs`（球の名前の焼き込み）。
-- **球の名前表示（2026-09-20）**: HUD と通過ログに `Ball 02  Binor` の形で出る。表示するのは RSC の `BallHUD`（`LotteryBall.displayName`）で、こちらは名前を入れるだけ。名前は創作DB の `Name_EN` 由来の `shortEN`（HUD 書体が CJK 未収録のため英名。日本語は CJK フォントが用意できてから＝User 判断）。
+- **球の名前表示（2026-09-20）**: HUD と通過ログに `Ball 93(Nintris)` / `Ball Binor` の形で出る（名前があれば RSC が番号の代わりに出す）。表示するのは RSC の `BallHUD`（`LotteryBall.displayName`）で、こちらは名前を入れるだけ。名前は創作DB の **`Name_EN` の 1 行目そのまま**（`shortEN` ではない＝User 判断 2026-09-20。番号つきの名は番号ごと、`Binor` のような別ボールは名前だけ。HUD 書体が CJK 未収録のため英名。日本語は CJK フォントが用意できてから＝User 判断）。
 - 球は `BallSkins.asset` の `texture != null` の行だけを流す（番号 = `skin.number`、名前 = `Ball_{Num_Badge}`）。別ボールとロトの球で番号が重なるのは意図どおり。
 
 ## 2. サブモジュール
@@ -40,7 +40,7 @@ Unity で Tools > NTsSphere > Sync External Assets
 - Sync 前にプロジェクトを開くと Unity が `Assets/UniversalRenderPipelineGlobalSettings.asset` / `DefaultVolumeProfile.asset` を新造して `GraphicsSettings.asset` を差し替える。Sync が RSC の設定へ戻して 2 ファイルを消す（コミットしない）。
 - Sync は Build Settings に `Assets/External/RouletteSphereChaser/Scenes/ParkScene_v2.unity` を登録する。
 - **自前の実行時コードは `Assets/Runtime~/` に置く**（Unity は `~` 付きフォルダを無視する）。Sync 前は RSC / Loto の型が無いので、`Assets/` 直下に置くとコンパイルエラー → Safe Mode で Sync メニューが出なくなる。編集は `Runtime~` 側で行い、Sync し直す。`.meta` と `Resources/NTsBallSpawner.prefab` も `Runtime~` が正。
-- **球の名前はビルドに焼く**: ビルドしたアプリは創作DB を読めないので、Sync のたびに `BallNameBaker` がエディタで `CreationsDb` から `shortEN` を引き、`Assets/External/NTsSphereChaser/Resources/NTsBallSpawner.prefab` の `names`（`table.skins` と同じ並び）へ書く。**`Runtime~` 側の prefab の `names` は空のまま**（名前データをこの Public リポジトリにコミットしない）。公開基準は `CreationsDb.ShownProgress` のまま＝未公開キャラは空。初回 Sync では型がまだ無いので、コンパイル後のドメインリロードで自走する（手動は `Tools > NTsSphere > Bake Ball Names`）。創作DB を更新したら Sync し直す。
+- **球の名前はビルドに焼く**: ビルドしたアプリは創作DB を読めないので、Sync のたびに `BallNameBaker` がエディタで `CreationsDb` から `nameEN` を引き、`Assets/External/NTsSphereChaser/Resources/NTsBallSpawner.prefab` の `names`（`table.skins` と同じ並び）へ書く。**`Runtime~` 側の prefab の `names` は空のまま**（名前データをこの Public リポジトリにコミットしない）。公開基準は `CreationsDb.ShownProgress` のまま＝未公開キャラは空。初回 Sync では型がまだ無いので、コンパイル後のドメインリロードで自走する（手動は `Tools > NTsSphere > Bake Ball Names`）。創作DB を更新したら Sync し直す。
 - NTsLotteryEngine に球テクスチャが増えたら: サブモジュールを進める → Sync。コード変更は不要。
 
 ## 4. ビルド
