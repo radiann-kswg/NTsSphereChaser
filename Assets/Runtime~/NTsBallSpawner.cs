@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Linq;
 using NTsLotteryEngine;
 using UnityEngine;
 
@@ -8,6 +7,7 @@ using UnityEngine;
 public class NTsBallSpawner : MonoBehaviour
 {
     public BallSkinTable table;   // Resources/NTsBallSpawner.prefab で BallSkins.asset を参照（ビルドに含めるため）
+    public string[] names;        // table.skins と同じ並びの HUD 用英名。Sync 後に Editor/BallNameBaker が焼く（Runtime~ 側の prefab は空のまま）
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     static void Boot()
@@ -22,8 +22,10 @@ public class NTsBallSpawner : MonoBehaviour
     IEnumerator Spawn(BallSpawner rsc)
     {
         int i = 0;
-        foreach (var skin in table.skins.Where(s => s.texture != null))
+        for (int k = 0; k < table.skins.Count; k++)
         {
+            var skin = table.skins[k];
+            if (skin.texture == null) continue;
             var pos = transform.position;
             if ((i++ & 1) == 1) pos.z = -pos.z;   // RSC と同じ南北交互投入
             var go = Instantiate(rsc.ballPrefab, pos, Random.rotation);
@@ -31,6 +33,7 @@ public class NTsBallSpawner : MonoBehaviour
             go.name = "Ball_" + skin.texture.name.Replace("BallTex_NTS-", "");
             var ball = go.GetComponent<LotteryBall>();
             ball.number = skin.number;
+            ball.displayName = names != null && k < names.Length ? names[k] : "";   // RSC の BallHUD が "Ball 02  Binor" と出す
             ball.Apply();
             ball.SetCharacterTexture(skin.texture);
             yield return new WaitForSeconds(rsc.interval);

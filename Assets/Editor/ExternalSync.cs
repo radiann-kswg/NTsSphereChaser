@@ -9,6 +9,7 @@ using UnityEngine;
 ///   RouletteSphereChaser/Assets/**（Editor 以外）→ Assets/External/RouletteSphereChaser/
 ///   Assets/Runtime~/**（自前の実行時コード。Unity は ~ 付きフォルダを無視する）→ Assets/External/NTsSphereChaser/
 ///     ＝Sync 前は RSC / Loto の型が無いので、Assets 直下に置くとコンパイルエラーで Safe Mode になりこのメニューが出ない。編集は Runtime~ 側で行い Sync し直す
+///     Runtime~/Editor/BallNameBaker.cs が Sync 後に創作DB の英名を NTsBallSpawner.prefab（External 側）へ焼く
 ///   NTsLotteryEngine: BallSkinTable.cs / CreationsDb.cs / LotoRules.cs / Data/*.asset / Textures/BallSkins/*.png
 public static class ExternalSync
 {
@@ -43,6 +44,10 @@ public static class ExternalSync
         AssetDatabase.DeleteAsset("Assets/UniversalRenderPipelineGlobalSettings.asset");
         AssetDatabase.DeleteAsset("Assets/DefaultVolumeProfile.asset");
         EditorBuildSettings.scenes = new[] { new EditorBuildSettingsScene(Scene, true) };
+        // 球の名前を焼き直す（prefab をコピーし直したので names が空に戻っている）。型は Sync 後にしか存在しないので名前で引く。
+        // 初回 Sync ではまだ無い → コンパイル後のドメインリロードで BallNameBaker が自走する
+        System.Type.GetType("BallNameBaker, Assembly-CSharp-Editor")?
+            .GetMethod("Bake", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)?.Invoke(null, null);
         Debug.Log($"[ExternalSync] {n} files → Assets/External（Build Settings: {Scene}）");
     }
 

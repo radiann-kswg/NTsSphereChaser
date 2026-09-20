@@ -8,7 +8,8 @@ AIエージェント設定の単一情報源（SSOT）。運用ルールの追�
 Unity `6000.6.2f1`（URP）。ターゲットは Linux x86_64（`RasPiOS_UnityConsole` = Raspberry Pi 4/5 + box64 で鑑賞する）。ブランチは `develop`。
 
 - **ゲームシステムの正典は RSC**。コースター・カメラ・HUD・観賞演出は RSC 側で実装し、ここでは RSC を**非破壊**で取り込む（RSC のファイルを書き換えない）。
-- 自前のコードは 2 本だけ: `Assets/Editor/ExternalSync.cs`（取り込み）と `Assets/Runtime~/NTsBallSpawner.cs`（球の差し替え）。
+- 自前のコードは 3 本だけ: `Assets/Editor/ExternalSync.cs`（取り込み）・`Assets/Runtime~/NTsBallSpawner.cs`（球の差し替え）・`Assets/Runtime~/Editor/BallNameBaker.cs`（球の名前の焼き込み）。
+- **球の名前表示（2026-09-20）**: HUD と通過ログに `Ball 02  Binor` の形で出る。表示するのは RSC の `BallHUD`（`LotteryBall.displayName`）で、こちらは名前を入れるだけ。名前は創作DB の `Name_EN` 由来の `shortEN`（HUD 書体が CJK 未収録のため英名。日本語は CJK フォントが用意できてから＝User 判断）。
 - 球は `BallSkins.asset` の `texture != null` の行だけを流す（番号 = `skin.number`、名前 = `Ball_{Num_Badge}`）。別ボールとロトの球で番号が重なるのは意図どおり。
 
 ## 2. サブモジュール
@@ -19,7 +20,9 @@ Unity `6000.6.2f1`（URP）。ターゲットは Linux x86_64（`RasPiOS_UnityCo
 | `NTsLotteryEngine/`（`develop`） | `BallSkinTable.cs` / `CreationsDb.cs` / `LotoRules.cs` / `Data/BallSkins.asset` / `Textures/BallSkins/*.png` |
 | `NTsLotteryEngine/LotteryBallKit/`（入れ子） | `Packages/manifest.json` の `file:` 依存（`BallSkinTable` が `NumberBall` を参照するため） |
 
-必要なのは上の 3 つだけ（RSC の入れ子と Loto の `100BeautiesLab_CreationsDB` / `PenchantManufacture_ImageAssets` は無くても動く）。
+| `NTsLotteryEngine/100BeautiesLab_CreationsDB/`（入れ子・任意） | 球の名前の出どころ（`DataBases/db_*.json` だけあればよい）。**無くても動く**（名前が空＝番号だけの表示になる） |
+
+RSC の入れ子と Loto の `PenchantManufacture_ImageAssets` は無くても動く。
 サブモジュールの中身はここから編集しない。直すなら元リポジトリで直してポインタを進める。
 
 ## 3. Sync（clone 後・サブモジュール更新後に必ず）
@@ -27,6 +30,9 @@ Unity `6000.6.2f1`（URP）。ターゲットは Linux x86_64（`RasPiOS_UnityCo
 ```
 git submodule update --init
 git -C NTsLotteryEngine submodule update --init LotteryBallKit
+# 球の名前を出すなら（任意・sparse で DataBases だけ）
+git -C NTsLotteryEngine submodule update --init --depth 1 100BeautiesLab_CreationsDB
+git -C NTsLotteryEngine/100BeautiesLab_CreationsDB sparse-checkout set --no-cone '/*.md' '/LICENCE' '/data/Works_NumberTales/DataBases/**'
 Unity で Tools > NTsSphere > Sync External Assets
 ```
 
@@ -34,6 +40,7 @@ Unity で Tools > NTsSphere > Sync External Assets
 - Sync 前にプロジェクトを開くと Unity が `Assets/UniversalRenderPipelineGlobalSettings.asset` / `DefaultVolumeProfile.asset` を新造して `GraphicsSettings.asset` を差し替える。Sync が RSC の設定へ戻して 2 ファイルを消す（コミットしない）。
 - Sync は Build Settings に `Assets/External/RouletteSphereChaser/Scenes/ParkScene_v2.unity` を登録する。
 - **自前の実行時コードは `Assets/Runtime~/` に置く**（Unity は `~` 付きフォルダを無視する）。Sync 前は RSC / Loto の型が無いので、`Assets/` 直下に置くとコンパイルエラー → Safe Mode で Sync メニューが出なくなる。編集は `Runtime~` 側で行い、Sync し直す。`.meta` と `Resources/NTsBallSpawner.prefab` も `Runtime~` が正。
+- **球の名前はビルドに焼く**: ビルドしたアプリは創作DB を読めないので、Sync のたびに `BallNameBaker` がエディタで `CreationsDb` から `shortEN` を引き、`Assets/External/NTsSphereChaser/Resources/NTsBallSpawner.prefab` の `names`（`table.skins` と同じ並び）へ書く。**`Runtime~` 側の prefab の `names` は空のまま**（名前データをこの Public リポジトリにコミットしない）。公開基準は `CreationsDb.ShownProgress` のまま＝未公開キャラは空。初回 Sync では型がまだ無いので、コンパイル後のドメインリロードで自走する（手動は `Tools > NTsSphere > Bake Ball Names`）。創作DB を更新したら Sync し直す。
 - NTsLotteryEngine に球テクスチャが増えたら: サブモジュールを進める → Sync。コード変更は不要。
 
 ## 4. ビルド
