@@ -12,8 +12,36 @@ public class NTsBallSpawner : MonoBehaviour
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     static void Boot()
     {
+        // --- UnityConsole(RasPiOS / Pi 4) 向けの実機調整。3つとも実機の計測で決めた --------------------
         // HDMI は 60Hz、vSyncCount=0 なので上限はここで決める。Pi 4 の V3D で無駄に回さないため
         Application.targetFrameRate = 60;
+
+        // パッドが無反応だった件。デバイスは Gamepad として正しく認識されている
+        // ([Input] Generic X-Box pad / layout=Gamepad)。UnityConsole の X セッションには
+        // ウィンドウマネージャが無く、誰もウィンドウに入力フォーカスを与えないため、Input System の
+        // 既定(ResetAndDisableNonBackgroundDevices)が非フォーカス扱いでパッドを無効化していた。
+        // 設定を変えるだけでは足りない: 起動時点で既に「非フォーカス」として無効化済みなので、明示的に戻す
+        // (実測 [Input] ... enabled=False / focused=False)
+        UnityEngine.InputSystem.InputSystem.settings.backgroundBehavior =
+            UnityEngine.InputSystem.InputSettings.BackgroundBehavior.IgnoreFocus;
+        foreach (var d in UnityEngine.InputSystem.InputSystem.devices)
+            UnityEngine.InputSystem.InputSystem.EnableDevice(d);
+
+        // V3D では Unity の OpenGL Core バックエンドが定数バッファを使えず
+        // ("SetConstantBuffer: The current renderer does not support constant buffers")、
+        // URP の SRP Batcher が働かない＝1オブジェクト1ドローコール。その状態でシャドウパスを回すと
+        // シーンをもう一度丸ごと描くことになり、ドローコールがそのまま倍になる。
+        // ponytail: 影は shadowDistance=0 で丸ごと落とす。戻したい/中間が欲しいときはこの数値だけ動かす
+        if (UnityEngine.Rendering.GraphicsSettings.defaultRenderPipeline
+            is UnityEngine.Rendering.Universal.UniversalRenderPipelineAsset urp)
+            urp.shadowDistance = 0f;
+
+        foreach (var d in UnityEngine.InputSystem.InputSystem.devices)
+            Debug.Log($"[Input] {d.displayName} / layout={d.layout} / enabled={d.enabled} / added={d.added}");
+        Debug.Log($"[PiTuning] targetFrameRate={Application.targetFrameRate} " +
+                  $"shadowDistance={(UnityEngine.Rendering.GraphicsSettings.defaultRenderPipeline as UnityEngine.Rendering.Universal.UniversalRenderPipelineAsset)?.shadowDistance} " +
+                  $"backgroundBehavior={UnityEngine.InputSystem.InputSystem.settings.backgroundBehavior} " +
+                  $"focused={Application.isFocused}");
         var rsc = FindAnyObjectByType<BallSpawner>();
         if (rsc == null) return;
         rsc.enabled = false;   // AfterSceneLoad は Start より前＝RSC 側は 1 球も出さない
