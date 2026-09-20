@@ -12,6 +12,8 @@ public class NTsBallSpawner : MonoBehaviour
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     static void Boot()
     {
+        // HDMI は 60Hz、vSyncCount=0 なので上限はここで決める。Pi 4 の V3D で無駄に回さないため
+        Application.targetFrameRate = 60;
         var rsc = FindAnyObjectByType<BallSpawner>();
         if (rsc == null) return;
         rsc.enabled = false;   // AfterSceneLoad は Start より前＝RSC 側は 1 球も出さない
