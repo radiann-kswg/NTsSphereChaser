@@ -5,7 +5,7 @@ AIエージェント設定の単一情報源（SSOT）。運用ルールの追�
 ## 1. 概要
 
 `NTsLotteryEngine` 収録のナンバーテールズ柄ボールテクスチャで、`RouletteSphereChaser`（RSC）のボールコースターを流す**観賞用** Unity アプリ。
-Unity `6000.6.2f1`（URP）。ターゲットは Linux x86_64（`RasPiOS_UnityConsole` = Raspberry Pi 4/5 + box64 で鑑賞する）。ブランチは `develop`。
+Unity `6000.6.2f1`（URP）。ターゲットは Linux x86_64（`RasPiOS_UnityConsole` = Raspberry Pi 4/5 + box64 で鑑賞する）。ブランチ運用は5章を参照。
 
 - **ゲームシステムの正典は RSC**。コースター・カメラ・HUD・観賞演出は RSC 側で実装し、ここでは RSC を**非破壊**で取り込む（RSC のファイルを書き換えない）。
 - 自前のコードは 3 本だけ: `Assets/Editor/ExternalSync.cs`（取り込み）・`Assets/Runtime~/NTsBallSpawner.cs`（球の差し替え）・`Assets/Runtime~/Editor/BallNameBaker.cs`（球の名前の焼き込み）。
@@ -54,9 +54,23 @@ unity build . --target StandaloneLinux64 --output-path Builds/NTsSphereChaser/NT
 
 ## 5. Git・ファイル運用
 
+| ブランチ | 担当・用途 |
+| --- | --- |
+| `develop` | Claude の開発作業（既定） |
+| `develop-codex` | Codex の開発・Blender MCP を用いたモデリング関連作業（既定） |
+| `main` | 安定版・統合用。直接コミットせず、統合は User が実施 |
+
+- 作業開始前に対象リポジトリで `git branch --show-current` と差分を確認する。`develop-codex` が未作成なら `develop` から作成する。既存の未コミット変更を保持し、別エージェントの作業は同じチェックアウトで同時に行わない。push は User の明示指示がある場合のみ担当ブランチへ行い、ブランチ間の統合は User の指示に従う。
 - `Library/` `Temp/` `Logs/` `obj/` `UserSettings/` `Builds/` `Assets/External/` はコミットしない。`.meta` は Unity に任せる。
-- Cowork のサンドボックスから git を書かない。push は User の指示があるときだけ。
+- Cowork の Linux サンドボックスから git を書かない。Codex Desktop の Windows PowerShell では Windows の `git` を直接使う。読み取りは `git --no-optional-locks` を使い、コミット時は今回の対象ファイルを明示して add する。
 - プレイ中にスクリプトを編集しない。完了前に Console の `error CS` を確認する。
+
+### 5.1 Codex と Blender MCP
+
+- Codex でも Blender MCP によるモデルの調査・モデリング・FBX 書き出しを行う。接続設定の正本はユーザーの `~/.codex/config.toml` の `mcp_servers.blender`。既存の Blender Lab 公式 MCP とアドオンを使う。
+- 編集前に `get_blendfile_summary_path_info` / `get_objects_summary` でファイルとシーンを確認する。未保存の別作業を保護し、Claude と Codex から同じ Blender シーンを同時編集しない。生成スクリプトは内容を確認し、`execute_blender_code` で実行するときは保存先と `REPO` を作業対象の絶対パスに明示する。
+- **既存モデルの正本は元リポジトリ**。1章・2章の非破壊取り込みを守り、サブモジュール内や `Assets/External/` のモデルを直接修正しない。NTsLotteryEngine のモデルは兄弟の独立リポジトリで、その `AGENTS.md` に従って変更する。RSC のモデルは RSC の独立リポジトリで行い、作業場所が無ければ User に確認する。取り込みはレビュー・統合後のコミットへ gitlink を進めて3章の Sync を行う。
+- Unity MCP は `unityMCP` のインスタンス一覧から対象プロジェクトを確認し、`set_active_instance` で選択してから再インポート・Console 確認を行う。MCP 設定追加後は Codex を再起動し、ツールの再読み込みと Blender 接続を確認する。
 
 ## 6. 創作内容の取り扱い
 
