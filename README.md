@@ -2,7 +2,7 @@
 
 [NTsLotteryEngine](https://github.com/radiann-kswg/NTsLotteryEngine) に収録しているナンバーテールズ柄のボールテクスチャで、
 [RouletteSphereChaser](https://github.com/radiann-kswg/RouletteSphereChaser) のボールコースターを眺める観賞用アプリ。
-Unity `6000.6.2f1`（URP）／ Linux x86_64 向け（[RasPiOS_UnityConsole](https://github.com/radiann-kswg/RasPiOS_UnityConsole) での鑑賞を想定）。
+Unity `6000.3.25f1`（6.3 LTS・URP）／ Linux x86_64 向け（[RasPiOS_UnityConsole](https://github.com/radiann-kswg/RasPiOS_UnityConsole) での鑑賞を想定）。
 
 流れる球は、テクスチャが出来上がっているキャラクターの分だけ。NTsLotteryEngine 側にテクスチャが増えると、球も増える。
 
@@ -17,7 +17,7 @@ git -C NTsLotteryEngine submodule update --init --depth 1 100BeautiesLab_Creatio
 git -C NTsLotteryEngine/100BeautiesLab_CreationsDB sparse-checkout set --no-cone '/*.md' '/LICENCE' '/data/Works_NumberTales/DataBases/**'
 ```
 
-Unity `6000.6.2f1` で開き、`Tools > NTsSphere > Sync External Assets` を 1 回実行する（サブモジュールの資産を `Assets/External/` へコピー。git 管轄外）。
+Unity `6000.3.25f1` で開き、`Tools > NTsSphere > Sync External Assets` を 1 回実行する（サブモジュールの資産を `Assets/External/` へコピー。git 管轄外）。
 `Assets/External/RouletteSphereChaser/Scenes/ParkScene_v2.unity` を開いて Play。
 
 追従中の球は HUD に `Ball 93(Nintris)` / `Ball Binor` のように創作DB の `Name_EN` で出る。名前は Sync のときにエディタで焼き込むので、ビルドしたアプリは創作DB を持ち歩かない。

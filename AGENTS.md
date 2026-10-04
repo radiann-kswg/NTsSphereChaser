@@ -5,7 +5,7 @@ AIエージェント設定の単一情報源（SSOT）。運用ルールの追�
 ## 1. 概要
 
 `NTsLotteryEngine` 収録のナンバーテールズ柄ボールテクスチャで、`RouletteSphereChaser`（RSC）のボールコースターを流す**観賞用** Unity アプリ。
-Unity `6000.6.2f1`（URP）。ターゲットは Linux x86_64（`RasPiOS_UnityConsole` = Raspberry Pi 4/5 + box64 で鑑賞する）。ブランチ運用は5章を参照。
+Unity `6000.3.25f1`（6.3 LTS・URP）。ターゲットは Linux x86_64（`RasPiOS_UnityConsole` = Raspberry Pi 4/5 + box64 で鑑賞する）。ブランチ運用は5章を参照。
 
 - **ゲームシステムの正典は RSC**。コースター・カメラ・HUD・観賞演出は RSC 側で実装し、ここでは RSC を**非破壊**で取り込む（RSC のファイルを書き換えない）。
 - 自前のコードは 3 本だけ: `Assets/Editor/ExternalSync.cs`（取り込み）・`Assets/Runtime~/NTsBallSpawner.cs`（球の差し替え）・`Assets/Runtime~/Editor/BallNameBaker.cs`（球の名前の焼き込み）。
