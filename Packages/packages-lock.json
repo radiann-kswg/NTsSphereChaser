@@ -327,11 +327,11 @@
       "url": "https://packages.unity.com"
     },
     "net.numbertales-radiann.lotteryballkit": {
-      "version": "file:../NTsLotteryEngine/LotteryBallKit/Assets/LotteryBallKit",
+      "version": "file:../LotteryBallKit/Assets/LotteryBallKit",
       "depth": 0,
       "source": "local",
       "dependencies": {
-        "com.unity.render-pipelines.universal": "17.5.0"
+        "com.unity.render-pipelines.universal": "17.3.0"
       }
     },
     "com.unity.modules.accessibility": {

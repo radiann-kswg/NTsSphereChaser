@@ -18,5 +18,6 @@
 - **RouletteSphereChaser** … https://github.com/radiann-kswg/RouletteSphereChaser — CC BY 4.0（ボールコースター一式）
   クレジット: `RouletteSphereChaser © 2026 by ラジアン(柏木主税) / RadianN_kswg — CC BY 4.0`
 - **LotteryBallKit** … https://github.com/radiann-kswg/LotteryBallKit — CC BY 4.0
+- **PenchantManufacture Image Assets** … https://github.com/radiann-kswg/PenchantManufacture_ImageAssets — CC BY 4.0（フォント。RadianN_kswg / ラジアン（柏木主税））
 
 ビルドした実行ファイルにはこれらが含まれるため、配布物全体としては CC BY-NC 4.0（非営利）の条件に従ってください。

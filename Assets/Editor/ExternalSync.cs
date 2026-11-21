@@ -15,19 +15,24 @@ public static class ExternalSync
 {
     const string Rsc = "RouletteSphereChaser/Assets", RscDst = "Assets/External/RouletteSphereChaser";
     const string Loto = "NTsLotteryEngine/Assets", LotoDst = "Assets/External/NTsLotteryEngine";
+    const string HudFont = "PenchantManufacture_ImageAssets/assets/fonts/PenchantManufacture-zero-numeral.otf";
+    const string NumberAtlas = "LotteryBallKit/Assets/LotteryBallKit/Textures/NumberAtlas.png";
     const string Scene = RscDst + "/Scenes/ParkScene_v2.unity";
 
     [MenuItem("Tools/NTsSphere/Sync External Assets")]
     public static void Sync()
     {
-        if (!Directory.Exists(Rsc) || !Directory.Exists(Loto))
-        { Debug.LogError("[ExternalSync] サブモジュールが無い: git submodule update --init --recursive"); return; }
+        if (!Directory.Exists(Rsc) || !Directory.Exists(Loto) || !File.Exists(HudFont) || !File.Exists(NumberAtlas))
+        { Debug.LogError("[ExternalSync] サブモジュールを初期化してください: git submodule update --init"); return; }
 
         int n = 0;
         foreach (var dir in Directory.GetDirectories(Rsc).Where(d => Path.GetFileName(d) != "Editor"))
             n += CopyTree(dir, Path.Combine(RscDst, Path.GetFileName(dir)));
         foreach (var f in Directory.GetFiles(Rsc).Where(f => !Path.GetFileName(f).StartsWith("Editor")))
             n += CopyFile(f, RscDst);
+        // 動的 TMP アトラスが参照する RSC の .meta を保ち、HUD と得点表示の字形を差し替える。
+        File.Copy(HudFont, RscDst + "/Fonts/PenchantManufacture.otf", true);
+        File.Copy(NumberAtlas, RscDst + "/Textures/NumberAtlas.png", true);
         foreach (var name in new[] { "BallSkinTable.cs", "CreationsDb.cs", "LotoRules.cs" })   // BallSkinTable が参照する最小セット
         {
             n += CopyFile($"{Loto}/Scripts/{name}", LotoDst + "/Scripts");

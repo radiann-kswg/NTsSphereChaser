@@ -17,19 +17,18 @@ Unity `6000.6.2f1`（URP）。ターゲットは Linux x86_64（`RasPiOS_UnityCo
 | パス | 用途 |
 | --- | --- |
 | `RouletteSphereChaser/`（`main`） | コースター一式（`Assets/` を Sync でコピー） |
+| `PenchantManufacture_ImageAssets/`（`main`） | HUD・得点表示用の `assets/fonts/PenchantManufacture-zero-numeral.otf` |
 | `NTsLotteryEngine/`（`develop`） | `BallSkinTable.cs` / `CreationsDb.cs` / `LotoRules.cs` / `Data/BallSkins.asset` / `Textures/BallSkins/*.png` |
-| `NTsLotteryEngine/LotteryBallKit/`（入れ子） | `Packages/manifest.json` の `file:` 依存（`BallSkinTable` が `NumberBall` を参照するため） |
-
+| `LotteryBallKit/`（`codex/numeral-zero`） | `Packages/manifest.json` の `file:` 依存。Sync が球面の番号アトラスを RSC の GUID で取り込む |
 | `NTsLotteryEngine/100BeautiesLab_CreationsDB/`（入れ子・任意） | 球の名前の出どころ（`DataBases/db_*.json` だけあればよい）。**無くても動く**（名前が空＝番号だけの表示になる） |
 
-RSC の入れ子と Loto の `PenchantManufacture_ImageAssets` は無くても動く。
+フォントと番号アトラスは直下のサブモジュールを正本とし、Sync が `Assets/External/RouletteSphereChaser/` に RSC の `.meta` を保って取り込む。
 サブモジュールの中身はここから編集しない。直すなら元リポジトリで直してポインタを進める。
 
 ## 3. Sync（clone 後・サブモジュール更新後に必ず）
 
 ```
 git submodule update --init
-git -C NTsLotteryEngine submodule update --init LotteryBallKit
 # 球の名前を出すなら（任意・sparse で DataBases だけ）
 git -C NTsLotteryEngine submodule update --init --depth 1 100BeautiesLab_CreationsDB
 git -C NTsLotteryEngine/100BeautiesLab_CreationsDB sparse-checkout set --no-cone '/*.md' '/LICENCE' '/data/Works_NumberTales/DataBases/**'

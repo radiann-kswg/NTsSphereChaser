@@ -6,3 +6,11 @@
 	path = NTsLotteryEngine
 	url = https://github.com/radiann-kswg/NTsLotteryEngine.git
 	branch = develop
+[submodule "PenchantManufacture_ImageAssets"]
+	path = PenchantManufacture_ImageAssets
+	url = https://github.com/radiann-kswg/PenchantManufacture_ImageAssets.git
+	branch = main
+[submodule "LotteryBallKit"]
+	path = LotteryBallKit
+	url = https://github.com/radiann-kswg/LotteryBallKit.git
+	branch = codex/numeral-zero
