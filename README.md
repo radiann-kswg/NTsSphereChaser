@@ -2,7 +2,7 @@
 
 [NTsLotteryEngine](https://github.com/radiann-kswg/NTsLotteryEngine) に収録しているナンバーテールズ柄のボールテクスチャで、
 [RouletteSphereChaser](https://github.com/radiann-kswg/RouletteSphereChaser) のボールコースターを眺める観賞用アプリ。
-Unity `6000.6.2f1`（URP）／ Linux x86_64 向け（[RasPiOS_UnityConsole](https://github.com/radiann-kswg/RasPiOS_UnityConsole) での鑑賞を想定）。
+Unity `6000.3.25f1`（6.3 LTS・URP）／ Linux x86_64 向け（[RasPiOS_UnityConsole](https://github.com/radiann-kswg/RasPiOS_UnityConsole) での鑑賞を想定）。
 
 流れる球は、テクスチャが出来上がっているキャラクターの分だけ。NTsLotteryEngine 側にテクスチャが増えると、球も増える。
 
@@ -16,7 +16,7 @@ git -C NTsLotteryEngine submodule update --init --depth 1 100BeautiesLab_Creatio
 git -C NTsLotteryEngine/100BeautiesLab_CreationsDB sparse-checkout set --no-cone '/*.md' '/LICENCE' '/data/Works_NumberTales/DataBases/**'
 ```
 
-Unity `6000.6.2f1` で開き、`Tools > NTsSphere > Sync External Assets` を 1 回実行する（サブモジュールの資産を `Assets/External/` へコピー。git 管轄外）。
+Unity `6000.3.25f1` で開き、`Tools > NTsSphere > Sync External Assets` を 1 回実行する（サブモジュールの資産を `Assets/External/` へコピー。git 管轄外）。
 `Assets/External/RouletteSphereChaser/Scenes/ParkScene_v2.unity` を開いて Play。
 
 HUD・盤面の得点・球面の番号には PenchantManufacture の `zero-numeral` 版を使う。Sync がフォントと LotteryBallKit の番号アトラスを取り込み、数字の 0 は斜線が縁から離れた字形になる。
